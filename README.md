@@ -1,99 +1,39 @@
-This is project that builds .sys file
-It was tested and works with llvm-mvsc (fork of llvm) and official mvsc toolchain from microsoft.
-pure llvm (not llvm-mvsc) was tried too, but it produced wrong .sys file, something wrong with their header.
+# .sys File Builder Project
 
-This project is made to be portable and requires minimal setup.
-CMakeLists.txt automates cert creation and signing of sys file for smooth use.
-That is achieved with create_ceritificate.ps1 script and included signtool.
-The signtool.exe was copied from official sdk and renamed to signtool_amd64.exe.
-Why signing of .sys file ? because windows requires .sys file to be signed even if testsign mode is enabled. Or it will refuse to load the driver.
-If you use kdmapper, you dont need to sign the .sys file. In that case the driver.c also needs small editing.
+This project is designed to build `.sys` files. It has been tested and works with:
 
+- **llvm-mvsc** (a fork of LLVM)
+- The official **MSVC** toolchain from Microsoft
 
-What to do:
-if you have MSVC and WDK installed, it will just work.
-if you want to get llvm-mvsc working, download it from backengineering github.
-Check llvm-mvsc-clion-settings.png if you want to use llvm-mvsc
+While **pure LLVM** (not llvm-mvsc) was also tested, it produced incorrect `.sys` files due to issues with the header.
 
-These things must be set in cmd.exe
+## Features
 
+- **Portability**: This project is made to be portable and requires minimal setup.
+- **Automated Certificate Creation & Signing**: The `CMakeLists.txt` automates certificate creation and signing for smooth use.
+  - Signing is handled by the `create_certificate.ps1` script and an included `signtool`.
+  - The `signtool.exe` is copied from the official SDK and renamed to `signtool_amd64.exe`.
+  
+### Why Sign the .sys File?
+
+Windows requires `.sys` files to be signed even if **test-signing** mode is enabled. Without signing, Windows will refuse to load the driver. However, if you are using **kdmapper**, you do not need to sign the `.sys` file. In that case, the `driver.c` file may require a small edit.
+
+## Setup Instructions
+
+### 1. With MSVC & WDK Installed
+
+If you have **MSVC** and the **WDK** installed, this project should just work.
+
+### 2. With llvm-mvsc
+
+If you want to use **llvm-mvsc**, download it from [backengineering's GitHub](https://github.com/backengineering/llvm-mvsc). You can check the `llvm-mvsc-clion-settings.png` for configuration guidance.
+
+## CMD Configuration
+
+Before building the driver, set the following in `cmd.exe`:
+
+```bash
 bcdedit /set nointegritychecks on
 bcdedit /set testsigning on
-bcdedit /set debug on  -> (if you want to see output of DbgPrint)
-
-and restart
-shutdown /r /t 0
-
-
-how to test?
-
-run DebugView as admin, ensure its connected to local pc
-enable verbose kernel output in debug print, set filter in debug print
-
-Drivers dont need any aditional files to acompant them like .inf or .cat
-
-
-.sys files are started as services using the "sc" command line tool
-
-run following commands if you are build the driver, exact location of binPath depends on your location
-sc create testdriver binPath= "C:/users/user/Desktop/sample-driver.sys" type= kernel
-sc start testdriver
-sc stop testdriver
-
-for checking the driver status
-sc query testdriver
-
-
-if this project helped you, please give it a star!
-
-also thanks to 
-This is project that builds .sys file
-It was tested and works with llvm-mvsc (fork of llvm) and official mvsc toolchain from microsoft.
-pure llvm (not llvm-mvsc) was tried too, but it produced wrong .sys file, something wrong with their header.
-
-This project is made to be portable and requires minimal setup.
-CMakeLists.txt automates cert creation and signing of sys file for smooth use.
-That is achieved with create_ceritificate.ps1 script and included signtool.
-The signtool.exe was copied from official sdk and renamed to signtool_amd64.exe.
-Why signing of .sys file ? because windows requires .sys file to be signed even if testsign mode is enabled. Or it will refuse to load the driver.
-If you use kdmapper, you dont need to sign the .sys file. In that case the driver.c also needs small editing.
-
-
-What to do:
-if you have MSVC and WDK installed, it will just work.
-if you want to get llvm-mvsc working, download it from backengineering github.
-Check llvm-mvsc-clion-settings.png if you want to use llvm-mvsc
-
-These things must be set in cmd.exe
-
-bcdedit /set nointegritychecks on
-bcdedit /set testsigning on
-bcdedit /set debug on  -> (if you want to see output of DbgPrint)
-
-and restart
-shutdown /r /t 0
-
-
-how to test?
-
-run DebugView as admin, ensure its connected to local pc
-enable verbose kernel output in debug print, set filter in debug print
-
-Drivers dont need any aditional files to acompant them like .inf or .cat
-
-
-.sys files are started as services using the "sc" command line tool
-
-run following commands if you are build the driver, exact location of binPath depends on your location
-sc create testdriver binPath= "C:/users/user/Desktop/sample-driver.sys" type= kernel
-sc start testdriver
-sc stop testdriver
-
-for checking the driver status
-sc query testdriver
-
-if this project helped you, please give it a star!
-
-also thanks to 
-https://github.com/SergiusTheBest/FindWDK
-for making FindWDK script that this project uses
+bcdedit /set debug on  # (if you want to see DbgPrint output)
+shutdown /r /t 0  # Restart the system
